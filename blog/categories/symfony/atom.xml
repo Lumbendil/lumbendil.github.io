@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Lumbendil's Blog]]></title>
-  <link href="http://Lumbendil.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: symfony | Lumbendil's Blog]]></title>
+  <link href="http://Lumbendil.github.io/blog/categories/symfony/atom.xml" rel="self"/>
   <link href="http://Lumbendil.github.io/"/>
   <updated>2013-10-06T19:21:00+00:00</updated>
   <id>http://Lumbendil.github.io/</id>
@@ -10,6 +10,7 @@
     <name><![CDATA[Roger Llopart Pla]]></name>
     
   </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
   <entry>

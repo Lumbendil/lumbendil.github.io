@@ -3,7 +3,7 @@
 <html lang="en-GB">
 <head>
 	<meta charset="utf-8">
-	<title>  | Lumbendil's Blog</title>
+	<title>Symfony basics: Services  | Lumbendil's Blog</title>
 
 	<meta name="author" content="Roger Llopart Pla">
 
@@ -42,17 +42,9 @@
 
 </header>
 
-	<div id="content" class="inner">
-
-
-    <article class="post">
+	<div id="content" class="inner"><article class="post">
 	<header>
-		<h2 class="title">
-			
-			<a href="/blog/2013/10/02/symfony-bases-services/">
-			
-				Symfony Basics: Services</a>
-		</h2>
+		<h2 class="title">Symfony Basics: Services</h2>
 		<div class="meta date">
 
 
@@ -67,8 +59,7 @@
 
 <time datetime="2013-10-02T22:42:00+00:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2013</time></div>
 	</header>
-	<div class="entry-content">
-		<p>I&rsquo;ll start this blog talking about the framework in which I currently do most of my work, <a href="http://symfony.com/">Symfony</a>. It&rsquo;s a framework which has a really interesting component, the <strong>Dependency Injection</strong> component. This component is used to define services. But that brings up the question of <em>what is a service?</em></p>
+	<div class="entry-content"><p>I&rsquo;ll start this blog talking about the framework in which I currently do most of my work, <a href="http://symfony.com/">Symfony</a>. It&rsquo;s a framework which has a really interesting component, the <strong>Dependency Injection</strong> component. This component is used to define services. But that brings up the question of <em>what is a service?</em></p>
 
 <p>A service is nothing else than an object which has it&rsquo;s creation already handled by the <strong>Dependency Injection component</strong>. This is to avoid having to re-type configuration everywhere, but instead keeping configuration in a different place than code usage. For instance, in most applications you need a database connection, which is always configured the same way. This database connection is a service. But looking at the dependency injection component in Symfony, one can&rsquo;t avoid to ask himself <em>should it be this complicated? Why is this approach good?</em></p>
 
@@ -84,14 +75,43 @@
 
 
 <p>If after reading this you&rsquo;d be interested in trying it, give it a go. You can read <a href="http://symfony.com/doc/current/components/dependency_injection/index.html">it&rsquo;s documentation</a>, go to <a href="https://github.com/symfony/DependencyInjection">it&rsquo;s repository</a> and play arround with it a bit. After all, you can&rsquo;t know if something is interesting for you until you&rsquo;ve tried it yourself.</p>
-
-		
-		
-	</div>
+</div>
+	
 
 </article>
 
+	
+	<div class="share">
+		<ul>
+			<li>
+  <a href="https://twitter.com/intent/tweet?text=Symfony basics: Services by @lumbendil&url=http://Lumbendil.github.io/blog/2013/10/02/symfony-bases-services/" title="Share Symfony basics: Services on Twitter">
+    <img src="/images/social/twitter.png" />
+  </a>
+</li>
 
+			<li>
+  <a href="https://www.facebook.com/sharer.php?u=http://Lumbendil.github.io/blog/2013/10/02/symfony-bases-services/" title="Share Symfony basics: Services on Facebook">
+    <img src="/images/social/facebook.png" />
+  </a>
+</li>
+
+			<li>
+  <a href="https://plus.google.com/share?url=http://Lumbendil.github.io/blog/2013/10/02/symfony-bases-services/" title="Share Symfony basics: Services on Google Plus">
+    <img src="/images/social/google.png" />
+  </a>
+</li>
+
+		</ul>
+	</div>
+
+
+
+
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
 </div>
 	<footer id="footer" class="inner">&copy; 2013
 
@@ -106,7 +126,10 @@
       var disqus_shortname = 'lumbendil-blog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Lumbendil.github.io/blog/2013/10/02/symfony-bases-services/';
+        var disqus_url = 'http://Lumbendil.github.io/blog/2013/10/02/symfony-bases-services/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
