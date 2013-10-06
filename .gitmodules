@@ -1,0 +1,3 @@
+[submodule ".themes/leanpress"]
+	path = .themes/leanpress
+	url = https://github.com/tlvince/leanpress.git
