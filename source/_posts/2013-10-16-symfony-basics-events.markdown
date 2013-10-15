@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Symfony Basics: Events"
-date: 2013-10-15 17:48
+date: 2013-10-16 00:31
 comments: true
 categories: Symfony
 published: false
@@ -14,7 +14,7 @@ Event dispatching allows you to develop a library which can easily be adapted by
 
 ### Using the EventDispatcher component
 
-So, if the reasoning behind why you should use event dispatching convinced you, let's see how this is used. TODO: GITHUB REPO
+So, if the reasoning behind why you should use event dispatching convinced you, let's see how this is used. All the code used here is available in my [event dispatcher example github repository](https://github.com/Lumbendil/EventDispatcherExample).
 
 What we will do is a fake mailer, which will be given a list of users and send each of them a text. Instead of sending emails, we'll print the email which would be sent through the screen.
 
@@ -40,7 +40,7 @@ class WelcomeMailer
 	 */
 	private function sendEmail($email)
 	{
-		$message = "Welcome $user";
+		$message = "Welcome $email";
 		echo "Sending message to $email: $message", PHP_EOL;
 		return true;
 	}
@@ -51,7 +51,7 @@ $emails = array(
 	'bob@example.com',
 	'alice@example.com',
 );
-$mailer->sendEmails();
+$mailer->sendEmails($emails);
 ```
 
 It's a really nice and simple class, and, if it actually sent emails and sent a more elaborate email, it could be useful for some people. But someone could, for instance, need to send a special email to some users, need to know how many successful and unsuccessful emails happened and log that, etc. Even though this can be accomplished in several ways, we'll show how to do it with events.
@@ -89,20 +89,20 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 	public function sendEmails(array $emails)
 	{
-		$this->dispatcher->dispatch('welcome_mailer.mailer_start');
+		$this->eventDispatcher->dispatch('welcome_mailer.mailer_start');
 
 		foreach ($emails as $email) {
 			$event = new GenericEvent();
 			$event['email'] = $email;
 
 			if ($this->sendEmail($email)) {
-				$this->dispatcher->dispatch('welcome_mailer.send_successful', $event);
+				$this->eventDispatcher->dispatch('welcome_mailer.send_successful', $event);
 			} else {
-				$this->dispatcher->dispatch('welcome_mailer.send_failed', $event);
+				$this->eventDispatcher->dispatch('welcome_mailer.send_failed', $event);
 			}
 		}
 
-		$this->dispatcher->dispatch('welcome_mailer.mailer_end');
+		$this->eventDispatcher->dispatch('welcome_mailer.mailer_end');
 	}
 	
 	/**
@@ -112,13 +112,13 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 	 */
 	private function sendEmail($email)
 	{
-		$message = "Welcome $user";
+		$message = "Welcome $email";
 
 		$event = new GenericEvent();
 		$event['email'] = $email;
 		$event['message'] = $message;
 		
-		$this->dispatcher->dispatch('welcome_mailer.mail_prepared', $event);
+		$this->dispatcher->eventDispatcher('welcome_mailer.mail_prepared', $event);
 		$message = $event['message'];
 
 		echo "Sending message to $email: $message", PHP_EOL;
