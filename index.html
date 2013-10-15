@@ -7,7 +7,7 @@
 
 	<meta name="author" content="Roger Llopart Pla">
 
-<meta name="description" content="I&rsquo;ll start this blog talking about the framework in which I currently do most of my work, Symfony. It&rsquo;s a framework which has a really &hellip;"> <meta name="keywords" content="">
+<meta name="description" content="In this new post I&rsquo;ll talk about a Symfony component which is used to help you users easily hook into the flow of your code. This is done by &hellip;"> <meta name="keywords" content="">
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -49,7 +49,368 @@
 	<header>
 		<h2 class="title">
 			
-			<a href="/blog/2013/10/02/symfony-bases-services/">
+			<a href="/blog/2013/10/16/symfony-basics-events/">
+			
+				Symfony Basics: Events</a>
+		</h2>
+		<div class="meta date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-16T00:31:00+00:00" pubdate data-updated="true">Oct 16<span>th</span>, 2013</time></div>
+	</header>
+	<div class="entry-content">
+		<p>In this new post I&rsquo;ll talk about a Symfony component which is used to help you users easily hook into the flow of your code. This is done by the <a href="https://github.com/symfony/EventDispatcher">EventDispatcher</a>.</p>
+
+<h3>Why do I need events?</h3>
+
+<p>Event dispatching allows you to develop a library which can easily be adapted by it&rsquo;s users for their own needs. For instance, they can log certain actions when they happen, or can modify an object before you use it. I will show how this is done with the EventDispatcher component in the next section.</p>
+
+<h3>Using the EventDispatcher component</h3>
+
+<p>So, if the reasoning behind why you should use event dispatching convinced you, let&rsquo;s see how this is used. All the code used here is available in my <a href="https://github.com/Lumbendil/EventDispatcherExample">event dispatcher example github repository</a>.</p>
+
+<p>What we will do is a fake mailer, which will be given a list of users and send each of them a text. Instead of sending emails, we&rsquo;ll print the email which would be sent through the screen.</p>
+
+<p>So, the first thing we need to do is create the mailer class.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">class</span> <span class="nc">WelcomeMailer</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="sd">/**</span>
+</span><span class='line'><span class="sd">  * @param string[] $emails An array of emails.</span>
+</span><span class='line'><span class="sd">  */</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">sendEmails</span><span class="p">(</span><span class="k">array</span> <span class="nv">$emails</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">foreach</span> <span class="p">(</span><span class="nv">$emails</span> <span class="k">as</span> <span class="nv">$email</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">sendEmail</span><span class="p">(</span><span class="nv">$email</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="sd">/**</span>
+</span><span class='line'><span class="sd">  * @param string $email The email of the user.</span>
+</span><span class='line'><span class="sd">  * @return bool True if the email was sent successfully,</span>
+</span><span class='line'><span class="sd">  *  false otherwise.</span>
+</span><span class='line'><span class="sd">  */</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">function</span> <span class="nf">sendEmail</span><span class="p">(</span><span class="nv">$email</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$message</span> <span class="o">=</span> <span class="s2">&quot;Welcome </span><span class="si">$email</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Sending message to </span><span class="si">$email</span><span class="s2">: </span><span class="si">$message</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$mailer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WelcomeMailer</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$emails</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="s1">&#39;bob@example.com&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;alice@example.com&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">sendEmails</span><span class="p">(</span><span class="nv">$emails</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s a really nice and simple class, and, if it actually sent emails and sent a more elaborate email, it could be useful for some people. But someone could, for instance, need to send a special email to some users, need to know how many successful and unsuccessful emails happened and log that, etc. Even though this can be accomplished in several ways, we&rsquo;ll show how to do it with events.</p>
+
+<p>First of, we need the mailer to depend on the event dispatcher. If the welcome mailer was a service in your application, this could be done using <a href="lumbendil.github.io/blog/2013/10/02/symfony-bases-services/">dependency injection</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">use</span> <span class="nx">Symfony\Component\EventDispatcher\EventDispatcherInterface</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Symfony\Component\EventDispatcher\EventDispatcher</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">WelcomeMailer</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$eventDispatcher</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nx">EventDispatcherInterface</span> <span class="nv">$eventDispatcher</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">eventDispatcher</span> <span class="o">=</span> <span class="nv">$eventDispatcher</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">// ...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$dispatcher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">EventDispatcher</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$mailer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WelcomeMailer</span><span class="p">(</span><span class="nv">$dispatcher</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, once we have the event dispatcher in place, it&rsquo;s time for us to start dispatching events. To ease this up, we&rsquo;ll use the class GenericEvent, to avoid having to write to many classes. Even though, it&rsquo;d be better to have a class for each event.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">use</span> <span class="nx">Symfony\Component\EventDispatcher\GenericEvent</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ...</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">sendEmails</span><span class="p">(</span><span class="k">array</span> <span class="nv">$emails</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">eventDispatcher</span><span class="o">-&gt;</span><span class="na">dispatch</span><span class="p">(</span><span class="s1">&#39;welcome_mailer.mailer_start&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">foreach</span> <span class="p">(</span><span class="nv">$emails</span> <span class="k">as</span> <span class="nv">$email</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nv">$event</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GenericEvent</span><span class="p">();</span>
+</span><span class='line'>          <span class="nv">$event</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$email</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">sendEmail</span><span class="p">(</span><span class="nv">$email</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">eventDispatcher</span><span class="o">-&gt;</span><span class="na">dispatch</span><span class="p">(</span><span class="s1">&#39;welcome_mailer.send_successful&#39;</span><span class="p">,</span> <span class="nv">$event</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">eventDispatcher</span><span class="o">-&gt;</span><span class="na">dispatch</span><span class="p">(</span><span class="s1">&#39;welcome_mailer.send_failed&#39;</span><span class="p">,</span> <span class="nv">$event</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">eventDispatcher</span><span class="o">-&gt;</span><span class="na">dispatch</span><span class="p">(</span><span class="s1">&#39;welcome_mailer.mailer_end&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="sd">/**</span>
+</span><span class='line'><span class="sd">  * @param string $email The email of the user.</span>
+</span><span class='line'><span class="sd">  * @return bool True if the email was sent successfully,</span>
+</span><span class='line'><span class="sd">  *  false otherwise.</span>
+</span><span class='line'><span class="sd">  */</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">function</span> <span class="nf">sendEmail</span><span class="p">(</span><span class="nv">$email</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$message</span> <span class="o">=</span> <span class="s2">&quot;Welcome </span><span class="si">$email</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nv">$event</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GenericEvent</span><span class="p">();</span>
+</span><span class='line'>      <span class="nv">$event</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$email</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$event</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$message</span><span class="p">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">dispatcher</span><span class="o">-&gt;</span><span class="na">eventDispatcher</span><span class="p">(</span><span class="s1">&#39;welcome_mailer.mail_prepared&#39;</span><span class="p">,</span> <span class="nv">$event</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$message</span> <span class="o">=</span> <span class="nv">$event</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Sending message to </span><span class="si">$email</span><span class="s2">: </span><span class="si">$message</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So now, we have added five events. The <code>mailer_start</code>, <code>mailer_end</code>, <code>send_successful</code>, <code>send_failed</code> and <code>mail_prepared</code> events. We have an object which represents the event, and is used to communicate things between the event dispatcher and the library. So, let&rsquo;s see how could we use this events. Let&rsquo;s see how we can use this events to handle the couple of examples we mentioned earlier.</p>
+
+<p>A simple example would be to customize the message we are sending to <code>alice@example.com</code>, so it says <code>Hi Alice.</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">class</span> <span class="nc">AliceEmailListener</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">changeAliceMessage</span><span class="p">(</span><span class="nx">GenericEvent</span> <span class="nv">$event</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nv">$event</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;alice@example.com&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nv">$event</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Hi Alice.&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$dispatcher</span><span class="o">-&gt;</span><span class="na">addListener</span><span class="p">(</span><span class="s1">&#39;welcome_mailer.mail_prepared&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="k">new</span> <span class="nx">AliceEmailListener</span><span class="p">(),</span> <span class="s1">&#39;changeAliceMessage&#39;</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, we have implemented a listener, which listens to the mail prepared event, and when it is triggered, it&rsquo;ll change the message if it&rsquo;s Alice&rsquo;s email. The listener here has been given as an array of an object and a function name, but it will work as long as it&rsquo;s a valid callable.</p>
+
+<p>For the next part, counting successful and failed emails, we&rsquo;ll use a subscriber. A subscriber is a class which implements a given interface, the <code>EventSubscriberInterface</code>, which has a method to get all the events the subscriber wants to be notified at.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">use</span> <span class="nx">Symfony\Component\EventDispatcher\GenericEvent</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Symfony\Component\EventDispatcher\EventSubscriberInterface</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">EmailCountSubscriber</span> <span class="k">implements</span> <span class="nx">EventSubscriberInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$successes</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$failures</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">getSubscribedEvents</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;welcome_mailer.mailer_start&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;resetCounters&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;welcome_mailer.mailer_end&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;printCounters&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;welcome_mailer.send_successful&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;countSuccess&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;welcome_mailer.send_failed&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;countFailure&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">resetCounters</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">successes</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">failures</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">countSuccess</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">successes</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">countFailuer</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">failures</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">printCounters</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Mailing ended. Successes: </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">successes</span><span class="si">}</span><span class="s2">. Failures: </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">failures</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$dispatcher</span><span class="o">-&gt;</span><span class="na">addSubscriber</span><span class="p">(</span><span class="k">new</span> <span class="nx">EmailCountSubscriber</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>There are some things I haven&rsquo;t covered in this post, such as priorities and stopping event propagation. In order to look more onto it, you should go to <a href="http://symfony.com/doc/current/components/event_dispatcher/index.html">the component documentation</a>.</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post">
+	<header>
+		<h2 class="title">
+			
+			<a href="/blog/2013/10/06/symfony-basics-services/">
 			
 				Symfony Basics: Services</a>
 		</h2>
@@ -65,7 +426,7 @@
   
 
 
-<time datetime="2013-10-02T22:42:00+00:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2013</time></div>
+<time datetime="2013-10-06T21:23:00+00:00" pubdate data-updated="true">Oct 6<span>th</span>, 2013</time></div>
 	</header>
 	<div class="entry-content">
 		<p>I&rsquo;ll start this blog talking about the framework in which I currently do most of my work, <a href="http://symfony.com/">Symfony</a>. It&rsquo;s a framework which has a really interesting component, the <strong>Dependency Injection</strong> component. This component is used to define services. But that brings up the question of <em>what is a service?</em></p>

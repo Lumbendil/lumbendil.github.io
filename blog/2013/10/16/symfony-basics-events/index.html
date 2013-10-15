@@ -3,7 +3,7 @@
 <html lang="en-GB">
 <head>
 	<meta charset="utf-8">
-	<title>  | Lumbendil's Blog</title>
+	<title>Symfony Basics: Events  | Lumbendil's Blog</title>
 
 	<meta name="author" content="Roger Llopart Pla">
 
@@ -42,17 +42,9 @@
 
 </header>
 
-	<div id="content" class="inner">
-
-
-    <article class="post">
+	<div id="content" class="inner"><article class="post">
 	<header>
-		<h2 class="title">
-			
-			<a href="/blog/2013/10/16/symfony-basics-events/">
-			
-				Symfony Basics: Events</a>
-		</h2>
+		<h2 class="title">Symfony Basics: Events</h2>
 		<div class="meta date">
 
 
@@ -67,8 +59,7 @@
 
 <time datetime="2013-10-16T00:31:00+00:00" pubdate data-updated="true">Oct 16<span>th</span>, 2013</time></div>
 	</header>
-	<div class="entry-content">
-		<p>In this new post I&rsquo;ll talk about a Symfony component which is used to help you users easily hook into the flow of your code. This is done by the <a href="https://github.com/symfony/EventDispatcher">EventDispatcher</a>.</p>
+	<div class="entry-content"><p>In this new post I&rsquo;ll talk about a Symfony component which is used to help you users easily hook into the flow of your code. This is done by the <a href="https://github.com/symfony/EventDispatcher">EventDispatcher</a>.</p>
 
 <h3>Why do I need events?</h3>
 
@@ -398,64 +389,43 @@
 <h3>Conclusion</h3>
 
 <p>There are some things I haven&rsquo;t covered in this post, such as priorities and stopping event propagation. In order to look more onto it, you should go to <a href="http://symfony.com/doc/current/components/event_dispatcher/index.html">the component documentation</a>.</p>
-
-		
-		
-	</div>
+</div>
+	
 
 </article>
 
+	
+	<div class="share">
+		<ul>
+			<li>
+  <a href="https://twitter.com/intent/tweet?text=Symfony Basics: Events by @lumbendil&url=http://Lumbendil.github.io/blog/2013/10/16/symfony-basics-events/" title="Share Symfony Basics: Events on Twitter">
+    <img src="/images/social/twitter.png" />
+  </a>
+</li>
 
-    <article class="post">
-	<header>
-		<h2 class="title">
-			
-			<a href="/blog/2013/10/06/symfony-basics-services/">
-			
-				Symfony Basics: Services</a>
-		</h2>
-		<div class="meta date">
+			<li>
+  <a href="https://www.facebook.com/sharer.php?u=http://Lumbendil.github.io/blog/2013/10/16/symfony-basics-events/" title="Share Symfony Basics: Events on Facebook">
+    <img src="/images/social/facebook.png" />
+  </a>
+</li>
 
+			<li>
+  <a href="https://plus.google.com/share?url=http://Lumbendil.github.io/blog/2013/10/16/symfony-basics-events/" title="Share Symfony Basics: Events on Google Plus">
+    <img src="/images/social/google.png" />
+  </a>
+</li>
 
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-06T21:23:00+00:00" pubdate data-updated="true">Oct 6<span>th</span>, 2013</time></div>
-	</header>
-	<div class="entry-content">
-		<p>I&rsquo;ll start this blog talking about the framework in which I currently do most of my work, <a href="http://symfony.com/">Symfony</a>. It&rsquo;s a framework which has a really interesting component, the <strong>Dependency Injection</strong> component. This component is used to define services. But that brings up the question of <em>what is a service?</em></p>
-
-<p>A service is nothing else than an object which has it&rsquo;s creation already handled by the <strong>Dependency Injection component</strong>. This is to avoid having to re-type configuration everywhere, but instead keeping configuration in a different place than code usage. For instance, in most applications you need a database connection, which is always configured the same way. This database connection is a service. But looking at the dependency injection component in Symfony, one can&rsquo;t avoid to ask himself <em>should it be this complicated? Why is this approach good?</em></p>
-
-<h3>Advantages of the Dependency Injection Component</h3>
-
-<p>The dependency injection component as implemented by Symfony offers a lot of functionality over a custom solution:</p>
-
-<ul>
-<li>Built to be optimal in production: The process of building a service container in this component is quite big, considering it has to parse files, remove unused dependencies and many other things, but most of the overhead is removed in production. This is thanks to code generation. The component builds a class which can build the services which can be required, and nothing else. This means a single PHP file is going to be read when having to use the container. Since it&rsquo;s likely that you use APC on your server, this means close to zero overhead from creating the classes manually.</li>
-<li>Rich set of features: It has many features, such as configuration files, tagging services to be able to find them afterwards, or conditional extension.</li>
-<li>Greatly backed up: It&rsquo;s backed up by both <a href="http://sensiolabs.com">Sensiolabs</a> and the Symfony community, thus it&rsquo;s bugs are fixed promptly.</li>
-</ul>
-
-
-<p>If after reading this you&rsquo;d be interested in trying it, give it a go. You can read <a href="http://symfony.com/doc/current/components/dependency_injection/index.html">it&rsquo;s documentation</a>, go to <a href="https://github.com/symfony/DependencyInjection">it&rsquo;s repository</a> and play arround with it a bit. After all, you can&rsquo;t know if something is interesting for you until you&rsquo;ve tried it yourself.</p>
-
-		
-		
+		</ul>
 	</div>
 
-</article>
 
-<nav id="pagenavi">
-    
-    
-</nav>
+
+
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
 </div>
 	<footer id="footer" class="inner">&copy; 2013
 
@@ -470,7 +440,10 @@
       var disqus_shortname = 'lumbendil-blog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Lumbendil.github.io/blog/2013/10/16/symfony-basics-events/';
+        var disqus_url = 'http://Lumbendil.github.io/blog/2013/10/16/symfony-basics-events/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
