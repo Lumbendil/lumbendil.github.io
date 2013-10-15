@@ -4,7 +4,6 @@ title: "Symfony Basics: Events"
 date: 2013-10-16 00:31
 comments: true
 categories: Symfony
-published: false
 ---
 In this new post I'll talk about a Symfony component which is used to help you users easily hook into the flow of your code. This is done by the [EventDispatcher](https://github.com/symfony/EventDispatcher).
 
